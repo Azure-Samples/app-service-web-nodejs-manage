@@ -23,7 +23,7 @@ var webSiteName = _generateRandomId('testweb', randomIds);
 var expectedServerFarmId;
 
 ///////////////////////////////////////
-//Entrypoint for the vm-sample script//
+//Entrypoint for the sample script   //
 ///////////////////////////////////////
 
 msRestAzure.interactiveLogin(function (err, credentials) {
