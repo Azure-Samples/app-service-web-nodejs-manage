@@ -12,6 +12,9 @@ var ResourceManagementClient = require('azure-arm-resource').ResourceManagementC
 var WebSiteManagement = require('azure-arm-website');
 
 _validateEnvironmentVariables();
+var clientId = process.env['CLIENT_ID'];
+var domain = process.env['DOMAIN'];
+var secret = process.env['APPLICATION_SECRET'];
 var subscriptionId = process.env['AZURE_SUBSCRIPTION_ID'];
 var resourceClient, webSiteClient;
 //Sample Config
@@ -26,7 +29,7 @@ var expectedServerFarmId;
 //Entrypoint for the sample script   //
 ///////////////////////////////////////
 
-msRestAzure.interactiveLogin(function (err, credentials) {
+msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (err, credentials) {
   if (err) return console.log(err);
   resourceClient = new ResourceManagementClient(credentials, subscriptionId);
   webSiteClient = new WebSiteManagement(credentials, subscriptionId);
@@ -37,8 +40,6 @@ msRestAzure.interactiveLogin(function (err, credentials) {
   // 4. list websites in a resourcegroup
   // 5. get details for a given website
   // 6. update site config(number of workers and phpversion) for a website
-  // 7. delete a website
-  // 8. delete the resource group
   
   async.series([
     function (callback) {
@@ -101,15 +102,6 @@ msRestAzure.interactiveLogin(function (err, credentials) {
             util.inspect(result, { depth: null })));
         callback(null, result);
       });
-    },
-    function (callback) {
-      //Task 6
-      deleteWebSite(function (err, result, request, response) {
-        if (err) {
-          return callback(err);
-        }
-        callback(null, result);
-      });
     }
   ], 
   // Once above operations finish, cleanup and exit.
@@ -118,13 +110,10 @@ msRestAzure.interactiveLogin(function (err, credentials) {
       console.log(util.format('\n??????Error occurred in one of the operations.\n%s', 
           util.inspect(err, { depth: null })));
     } else {
-      console.log(util.format('\n######All the operations have completed successfully. '));
+      console.log(util.format('\n######You can browse the website at: https://%s.', results[4].enabledHostNames[0]));
     }
-    //Cleanup
-    deleteResourceGroup(function (err, result, request, response) {
-      console.log('\n###### Exit ######')
-      process.exit();
-    });
+    console.log('\n###### Exit ######')
+    process.exit();
   });
 });
 
@@ -192,6 +181,9 @@ function deleteResourceGroup(callback) {
 
 function _validateEnvironmentVariables() {
   var envs = [];
+  if (!process.env['CLIENT_ID']) envs.push('CLIENT_ID');
+  if (!process.env['DOMAIN']) envs.push('DOMAIN');
+  if (!process.env['APPLICATION_SECRET']) envs.push('APPLICATION_SECRET');
   if (!process.env['AZURE_SUBSCRIPTION_ID']) envs.push('AZURE_SUBSCRIPTION_ID');
   if (envs.length > 0) {
     throw new Error(util.format('please set/export the following environment variables: %s', envs.toString()));
