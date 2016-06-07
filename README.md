@@ -17,6 +17,8 @@ This sample demonstrates how to manage your webapps using a node.js client
     ```
     cd app-service-web-nodejs-manage
     npm install
+    npm install azync
+    npm install ms-rest-azure
     ```
 
 1. [Create a service principal](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal-cli/).
