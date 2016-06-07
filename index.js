@@ -110,7 +110,7 @@ msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (
       console.log(util.format('\n??????Error occurred in one of the operations.\n%s', 
           util.inspect(err, { depth: null })));
     } else {
-      console.log(util.format('\n######You can browse the website at: %s.', results[4].enabledHostNames[0]));
+      console.log(util.format('\n######You can browse the website at: https://%s.', results[4].enabledHostNames[0]));
     }
     console.log('\n###### Exit ######')
     process.exit();
