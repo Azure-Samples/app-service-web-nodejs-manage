@@ -12,7 +12,6 @@ This sample demonstrates how to manage your webapps using a node.js client
 - `set APPLICATION_SECRET=password` **OR** `export APPLICATION_SECRET=password`
 - `set DOMAIN=<tenant id as a guid> OR the domain name of your org <contosocorp.com>` **OR** `export DOMAIN=<tenant id as a guid> OR the domain name of your org <contosocorp.com>`
 - `node index.js`
-```
 
 ## Workflow of this sample
  
