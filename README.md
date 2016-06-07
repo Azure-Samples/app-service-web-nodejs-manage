@@ -1,17 +1,42 @@
 # app-service-web-nodejs-manage
+
 This sample demonstrates how to manage your webapps using a node.js client
 
-## Running this sample
+## Run this sample
 
-- [Create a Service Principal](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal-cli/)
-- `git clone https://github.com:Azure-Samples/app-service-web-nodejs-manage.git`
-- `cd app-service-web-nodejs-manage`
-- `npm install`
-- `set AZURE_SUBSCRIPION_ID=abc-123-345` **OR** `export AZURE_SUBSCRIPION_ID=abc-123-345`
-- `set CLIENT_ID=def-456-897` **OR** `export CLIENT_ID=def-456-897`
-- `set APPLICATION_SECRET=password` **OR** `export APPLICATION_SECRET=password`
-- `set DOMAIN=<tenant id as a guid> OR the domain name of your org <contosocorp.com>` **OR** `export DOMAIN=<tenant id as a guid> OR the domain name of your org <contosocorp.com>`
-- `node index.js`
+1. If you don't already have it, [get node.js](https://nodejs.org).
+
+1. Clone the repository.
+
+    ```
+    git clone https://github.com:Azure-Samples/app-service-web-nodejs-manage.git
+    ```
+
+1. Install the dependencies.
+
+    ```
+    cd app-service-web-nodejs-manage
+    npm install
+    ```
+
+1. [Create a service principal](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal-cli/).
+
+1. Set the following environment variables using the information from the service principle that you created.
+
+    ```
+    export AZURE_SUBSCRIPION_ID=abc-123-345
+    export CLIENT_ID=def-456-897
+	export APPLICATION_SECRET=password
+	export DOMAIN=<tenant id as a guid> OR the domain name of your org <contosocorp.com>
+    ```
+
+    > [AZURE.NOTE] On Windows, use `set` instead of `export`.
+
+1. Run the sample.
+
+    ```
+    node index.js
+    ```
 
 ## Workflow of this sample
  
