@@ -28,22 +28,22 @@ This sample demonstrates how to manage your Azure websites using a node.js clien
     ```
     cd app-service-web-nodejs-manage
     npm install
-    npm install azync
+    npm install async
     npm install ms-rest-azure
     ```
 
 1. Create an Azure service principal either through
-[Azure CLI](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal-cli/),
-[PowerShell](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal/)
-or [the portal](https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/).
+    [Azure CLI](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal-cli/),
+    [PowerShell](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal/)
+    or [the portal](https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/).
 
 1. Set the following environment variables using the information from the service principle that you created.
 
     ```
-    export AZURE_SUBSCRIPION_ID=abc-123-345
-    export CLIENT_ID=def-456-897
-	export APPLICATION_SECRET=password
-	export DOMAIN=<tenant id as a guid> OR the domain name of your org <contosocorp.com>
+    export AZURE_SUBSCRIPION_ID={your subscription id}
+    export CLIENT_ID={your client id}
+	export APPLICATION_SECRET={your client secret}
+    export DOMAIN={your tenant id as a guid OR the domain name of your org <contosocorp.com>}
     ```
 
     > [AZURE.NOTE] On Windows, use `set` instead of `export`.
@@ -64,7 +64,7 @@ or [the portal](https://azure.microsoft.com/en-us/documentation/articles/resourc
 ## What does index.js do?
 
 The sample creates, lists and updates a website.
-It starts by logging in using your service principle.
+It starts by logging in using your service principal.
 
 ```javascript
 _validateEnvironmentVariables();
