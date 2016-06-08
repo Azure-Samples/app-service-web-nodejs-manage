@@ -21,7 +21,10 @@ This sample demonstrates how to manage your webapps using a node.js client
     npm install ms-rest-azure
     ```
 
-1. [Create a service principal](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal-cli/).
+1. Create an Azure service principal either through
+[Azure CLI](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal-cli/),
+[PowerShell](https://azure.microsoft.com/en-us/documentation/articles/resource-group-authenticate-service-principal/)
+or [the portal](https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/).
 
 1. Set the following environment variables using the information from the service principle that you created.
 
@@ -40,22 +43,22 @@ This sample demonstrates how to manage your webapps using a node.js client
     node index.js
     ```
 
-## Workflow of this sample
- 
-1. Login interactively
-2. Create a resource group 
-3. Create a hosting plan
-4. Create a website
-5. List websites in the resourcegroup
-6. Get details for the given website
-7. Update site config(number of workers and phpversion) for the website
+1. To clean up after index.js, run the cleanup script.
 
-## Cleanup
-- Please run the script from the same command prompt/terminal as the environment variables defined in the above step would be set. If not then please set them before running the cleanup script.
+    ```
+    node cleanup.js <resourceGroupName> <websiteName>
+    ```
 
-```
-node cleanup.js <resourceGroupName> <websiteName>
-```
+## What does index.js do?
+
+The sample 
+
+### Create a resource group 
+### Create a hosting plan
+### Create a website
+### List websites in the resourcegroup
+### Get details for the given website
+### Update site config(number of workers and phpversion) for the website
 
 ## More information
 Please refer to [Azure SDK for Node](https://github.com/Azure/azure-sdk-for-node) for more information.
