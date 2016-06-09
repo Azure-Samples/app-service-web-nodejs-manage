@@ -47,7 +47,7 @@ This sample demonstrates how to manage your Azure websites using a node.js clien
     ```
     export AZURE_SUBSCRIPION_ID={your subscription id}
     export CLIENT_ID={your client id}
-	export APPLICATION_SECRET={your client secret}
+    export APPLICATION_SECRET={your client secret}
     export DOMAIN={your tenant id as a guid OR the domain name of your org <contosocorp.com>}
     ```
 
