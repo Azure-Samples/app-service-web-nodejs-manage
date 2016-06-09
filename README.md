@@ -1,3 +1,9 @@
+---
+services: app-service
+platforms: node.js
+author: allclark
+---
+
 # Manage Azure websites with Node.js
 
 This sample demonstrates how to manage your Azure websites using a node.js client.
