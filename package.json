@@ -19,7 +19,9 @@
   "license": "MIT",
   "dependencies": {
     "azure-arm-website": "^0.11.0",
-    "azure-arm-resource": "^1.4.4-preview"
+    "azure-arm-resource": "^1.4.4-preview",
+    "ms-rest-azure": "^1.14.3",
+    "async": "0.2.7"
   },
   "homepage": "https://github.com/Azure-Samples/app-service-web-nodejs-manage",
   "repository": {

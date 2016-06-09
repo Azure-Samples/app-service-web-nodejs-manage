@@ -34,7 +34,6 @@ This sample demonstrates how to manage your Azure websites using a node.js clien
     ```
     cd app-service-web-nodejs-manage
     npm install
-    npm install async ms-rest-azure
     ```
 
 1. Create an Azure service principal either through
