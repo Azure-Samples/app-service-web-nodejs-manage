@@ -112,7 +112,8 @@ msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (
     } else {
       console.log(util.format('\n######You can browse the website at: https://%s.', results[4].enabledHostNames[0]));
     }
-    console.log('\n###### Exit ######')
+    console.log('\n###### Exit ######');
+    console.log(util.format('Please execute the following script for cleanup:\nnode cleanup.js %s %s', resourceGroupName, webSiteName));
     process.exit();
   });
 });
