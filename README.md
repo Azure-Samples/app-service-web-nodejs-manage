@@ -1,6 +1,6 @@
 ---
 services: app-service
-platforms: node.js
+platforms: nodejs
 author: allclark
 ---
 
