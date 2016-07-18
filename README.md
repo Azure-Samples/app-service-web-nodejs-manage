@@ -1,7 +1,7 @@
 ---
 services: app-service
 platforms: nodejs
-author: eduardk
+author: amarzavery
 ---
 
 # Manage Azure websites with Node.js
