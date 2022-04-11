@@ -6,9 +6,9 @@
 'use strict';
 
 var util = require('util');
-var msRestAzure = require('ms-rest-azure');
-var ResourceManagementClient = require('azure-arm-resource').ResourceManagementClient;
-var WebSiteManagement = require('azure-arm-website');
+const { DefaultAzureCredential } = require('@azure/identity');
+var { ResourceManagementClient } = require('@azure/arm-resources');
+var { WebSiteManagementClient } = require('@azure/arm-appservice');
 
 _validateEnvironmentVariables();
 _validateParameters();
@@ -20,14 +20,25 @@ var resourceGroupName = process.argv[2];
 var websiteName = process.argv[3];
 var resourceClient, websiteClient;
 
-function deleteWebSite(callback) {
-  console.log('\nDeleting web site : ' + websiteName);
-  return websiteClient.sites.deleteSite(resourceGroupName, websiteName, callback);
+async function deleteWebSite() {
+  try{
+    console.log('\nDeleting web site : ' + websiteName);
+    await websiteClient.webApps.delete(resourceGroupName, websiteName);
+    console.log('Successfully deleted the website: ' + websiteName);
+  }catch(err){
+    console.log('Error occured in deleting the website: ' + websiteName + '\n' + util.inspect(err, { depth: null }));
+  }
 }
 
-function deleteResourceGroup(callback) {
-  console.log('\nDeleting resource group: ' + resourceGroupName);
-  return resourceClient.resourceGroups.deleteMethod(resourceGroupName, callback);
+async function deleteResourceGroup() {
+  try{
+    console.log('\nDeleting the resource group can take few minutes, so please be patient :).');
+    console.log('\nDeleting resource group: ' + resourceGroupName);
+    await resourceClient.resourceGroups.beginDeleteAndWait(resourceGroupName);
+    console.log('Successfully deleted the resourcegroup: ' + resourceGroupName);
+  }catch(err){
+    console.log('Error occured in deleting the resource group: ' + resourceGroupName + '\n' + util.inspect(err, { depth: null }));
+  }
 }
 
 
@@ -49,17 +60,14 @@ function _validateParameters() {
 }
 
 //Entrypoint of the cleanup script
-msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (err, credentials) {
-  if (err) return console.log(err);
+async function main(){
+  const credentials = new DefaultAzureCredential();
   resourceClient = new ResourceManagementClient(credentials, subscriptionId);
-  websiteClient = new WebSiteManagement(credentials, subscriptionId);
-  deleteWebSite(function (err, result) {
-    if (err) return console.log('Error occured in deleting the website: ' + websiteName + '\n' + util.inspect(err, { depth: null }));
-    console.log('Successfully deleted the website: ' + websiteName);
-    console.log('\nDeleting the resource group can take few minutes, so please be patient :).');
-    deleteResourceGroup(function (err, result) {
-      if (err) return console.log('Error occured in deleting the resource group: ' + resourceGroupName + '\n' + util.inspect(err, { depth: null }));
-      console.log('Successfully deleted the resourcegroup: ' + resourceGroupName);
-    });
-  });
-});
+  websiteClient = new WebSiteManagementClient(credentials, subscriptionId);
+  await deleteWebSite();
+  await deleteResourceGroup();
+}
+main().catch((err)=>{
+  console.log(err)
+})
+

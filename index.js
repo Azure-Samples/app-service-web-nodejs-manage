@@ -7,9 +7,9 @@
 
 var util = require('util');
 var async = require('async');
-var msRestAzure = require('ms-rest-azure');
-var ResourceManagementClient = require('azure-arm-resource').ResourceManagementClient;
-var WebSiteManagement = require('azure-arm-website');
+const { DefaultAzureCredential } = require('@azure/identity');
+var { ResourceManagementClient } = require('@azure/arm-resources');
+var { WebSiteManagementClient } = require('@azure/arm-appservice');
 
 _validateEnvironmentVariables();
 var clientId = process.env['CLIENT_ID'];
@@ -29,10 +29,10 @@ var expectedServerFarmId;
 //Entrypoint for the sample script   //
 ///////////////////////////////////////
 
-msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (err, credentials) {
-  if (err) return console.log(err);
+try{
+  const credentials = new DefaultAzureCredential();
   resourceClient = new ResourceManagementClient(credentials, subscriptionId);
-  webSiteClient = new WebSiteManagement(credentials, subscriptionId);
+  webSiteClient = new WebSiteManagementClient(credentials, subscriptionId);
   // Work flow of this sample:
   // 1. create a resource group 
   // 2. create a hosting plan
@@ -42,66 +42,66 @@ msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (
   // 6. update site config(number of workers and phpversion) for a website
   
   async.series([
-    function (callback) {
+    async function (callback) {
       //Setup
-      createResourceGroup(function (err, result, request, response) {
-        if (err) {
-          return callback(err);
-        }
+      try{
+        const result = await createResourceGroup();
         callback(null, result);
-      });
+      }catch(err){
+        return callback(err);
+      }
     },
-    function (callback) {
+    async function (callback) {
       //Task 1
-      createHostingPlan(function (err, result, request, response) {
-        if (err) {
-          return callback(err);
-        }
+      try{
+        const result = await createHostingPlan();
         expectedServerFarmId = result.id;
         callback(null, result);
-      });
+      }catch(err){
+        return callback(err);
+      }
     },
-    function (callback) {
+    async function (callback) {
       //Task 2
-      createWebSite(function (err, result, request, response) {
-        if (err) {
-          return callback(err);
-        }
+      try{
+        const result = await createWebSite();
         callback(null, result);
-      });
+      }catch(err){
+        return callback(err);
+      }
     },
     function (callback) {
       //Task 3
-      listWebsites(function (err, result, request, response) {
-        if (err) {
-          return callback(err);
-        }
+      try{
+        const result = listWebsites();
         console.log(util.format('\nWebsites in subscription %s : \n%s',
             subscriptionId, util.inspect(result, { depth: null })));
         callback(null, result);
-      });
+      }catch(err){
+        return callback(err);
+      }
     },
-    function (callback) {
+    async function (callback) {
       //Task 4
-      getWebSite(function (err, result, request, response) {
-        if (err) {
-          return callback(err);
-        }
+      try{
+        const result = await getWebSite();
         console.log(util.format('\nWeb site details: \n%s',
             util.inspect(result, { depth: null })));
         callback(null, result);
-      });
+      }catch(err){
+        return callback(err);
+      }
     },
-    function (callback) {
+    async function (callback) {
       //Task 5
-      updateWebisteConfig(function (err, result, request, response) {
-        if (err) {
-          return callback(err);
-        }
+      try{
+        const result = await updateWebisteConfig();
         console.log(util.format('\nWeb site details: \n%s',
             util.inspect(result, { depth: null })));
         callback(null, result);
-      });
+      }catch(err){
+        return callback(err);
+      }
     }
   ], 
   // Once above operations finish, cleanup and exit.
@@ -116,17 +116,18 @@ msRestAzure.loginWithServicePrincipalSecret(clientId, secret, domain, function (
     console.log(util.format('Please execute the following script for cleanup:\nnode cleanup.js %s %s', resourceGroupName, webSiteName));
     process.exit();
   });
-});
-
-
-// Helper functions
-function createResourceGroup(callback) {
-  var groupParameters = { location: location, tags: { sampletag: 'sampleValue' } };
-  console.log('\nCreating resource group: ' + resourceGroupName);
-  return resourceClient.resourceGroups.createOrUpdate(resourceGroupName, groupParameters, callback);
+}catch(err){
+    console.log(err)
 }
 
-function createHostingPlan(callback) {
+// Helper functions
+async function createResourceGroup() {
+  var groupParameters = { location: location, tags: { sampletag: 'sampleValue' } };
+  console.log('\nCreating resource group: ' + resourceGroupName);
+  return await resourceClient.resourceGroups.createOrUpdate(resourceGroupName, groupParameters);
+}
+
+async function createHostingPlan() {
   var planParameters = {
     serverFarmWithRichSkuName: hostingPlanName,
     location: location,
@@ -137,29 +138,29 @@ function createHostingPlan(callback) {
     }  
   };
   console.log('\nCreating hosting plan: ' + hostingPlanName + ' with parameters:\n' + util.inspect(planParameters));
-  return webSiteClient.serverFarms.createOrUpdateServerFarm(resourceGroupName, hostingPlanName, planParameters, callback);
+  return await webSiteClient.appServicePlans.beginCreateOrUpdateAndWait(resourceGroupName, hostingPlanName, planParameters);
 }
 
-function createWebSite(callback) {
+async function createWebSite() {
   var parameters = {
     location: location,
     serverFarmId: expectedServerFarmId
   };
   console.log('\nCreating web site: ' + webSiteName + ' with parameters:\n' + util.inspect(parameters));
-  return webSiteClient.sites.createOrUpdateSite(resourceGroupName, webSiteName, parameters, callback);
+  return await webSiteClient.webApps.beginCreateOrUpdateAndWait(resourceGroupName, webSiteName, parameters);
 }
 
-function listWebsites(callback) {
+function listWebsites() {
   console.log('\nListing websites in the resourceGroup : ' + resourceGroupName);
-  return webSiteClient.sites.getSites(resourceGroupName, callback);
+  return webSiteClient.webApps.listByResourceGroup(resourceGroupName);
 }
 
-function getWebSite(callback) {
+async function getWebSite() {
   console.log('\nGetting info of website: ' + webSiteName);
-  return webSiteClient.sites.getSite(resourceGroupName, webSiteName, callback);
+  return await webSiteClient.webApps.get(resourceGroupName, webSiteName);
 }
 
-function updateWebisteConfig(callback) {
+async function updateWebisteConfig() {
   var siteConfig = {
     location: location,
     serverFarmId: expectedServerFarmId,
@@ -167,17 +168,17 @@ function updateWebisteConfig(callback) {
     phpVersion: '5.5'
   };
   console.log('\nUpdating config for website : ' + webSiteName + ' with parameters:\n' + util.inspect(siteConfig));
-  return webSiteClient.sites.createOrUpdateSiteConfig(resourceGroupName, webSiteName, siteConfig, callback);
+  return await webSiteClient.webApps.updateConfiguration(resourceGroupName, webSiteName, siteConfig);
 }
 
-function deleteWebSite(callback) {
+async function deleteWebSite() {
   console.log('\nDeleting web site : ' + webSiteName);
-  return webSiteClient.sites.deleteSite(resourceGroupName, webSiteName, callback);
+  return webSiteClient.webApps.delete(resourceGroupName, webSiteName);
 }
 
-function deleteResourceGroup(callback) {
+async function deleteResourceGroup() {
   console.log('\nDeleting resource group: ' + resourceGroupName);
-  return resourceClient.resourceGroups.deleteMethod(resourceGroupName, callback);
+  return await resourceClient.resourceGroups.beginDeleteAndWait(resourceGroupName);
 }
 
 function _validateEnvironmentVariables() {
