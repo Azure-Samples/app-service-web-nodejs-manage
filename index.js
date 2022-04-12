@@ -7,7 +7,7 @@
 
 var util = require('util');
 var async = require('async');
-const { DefaultAzureCredential } = require('@azure/identity');
+const { ClientSecretCredential } = require('@azure/identity');
 var { ResourceManagementClient } = require('@azure/arm-resources');
 var { WebSiteManagementClient } = require('@azure/arm-appservice');
 
@@ -30,7 +30,7 @@ var expectedServerFarmId;
 ///////////////////////////////////////
 
 try{
-  const credentials = new DefaultAzureCredential();
+  const credentials = new ClientSecretCredential(domain,clientId,secret);
   resourceClient = new ResourceManagementClient(credentials, subscriptionId);
   webSiteClient = new WebSiteManagementClient(credentials, subscriptionId);
   // Work flow of this sample:

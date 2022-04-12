@@ -6,7 +6,7 @@
 'use strict';
 
 var util = require('util');
-const { DefaultAzureCredential } = require('@azure/identity');
+const { ClientSecretCredential } = require('@azure/identity');
 var { ResourceManagementClient } = require('@azure/arm-resources');
 var { WebSiteManagementClient } = require('@azure/arm-appservice');
 
@@ -21,24 +21,13 @@ var websiteName = process.argv[3];
 var resourceClient, websiteClient;
 
 async function deleteWebSite() {
-  try{
-    console.log('\nDeleting web site : ' + websiteName);
-    await websiteClient.webApps.delete(resourceGroupName, websiteName);
-    console.log('Successfully deleted the website: ' + websiteName);
-  }catch(err){
-    console.log('Error occured in deleting the website: ' + websiteName + '\n' + util.inspect(err, { depth: null }));
-  }
+  console.log('\nDeleting web site : ' + websiteName);
+  return await websiteClient.webApps.delete(resourceGroupName, websiteName);
 }
 
 async function deleteResourceGroup() {
-  try{
-    console.log('\nDeleting the resource group can take few minutes, so please be patient :).');
-    console.log('\nDeleting resource group: ' + resourceGroupName);
-    await resourceClient.resourceGroups.beginDeleteAndWait(resourceGroupName);
-    console.log('Successfully deleted the resourcegroup: ' + resourceGroupName);
-  }catch(err){
-    console.log('Error occured in deleting the resource group: ' + resourceGroupName + '\n' + util.inspect(err, { depth: null }));
-  }
+  console.log('\nDeleting resource group: ' + resourceGroupName);
+  return await resourceClient.resourceGroups.beginDeleteAndWait(resourceGroupName);
 }
 
 
@@ -60,14 +49,22 @@ function _validateParameters() {
 }
 
 //Entrypoint of the cleanup script
-async function main(){
-  const credentials = new DefaultAzureCredential();
+try{
+  const credentials = new ClientSecretCredential(domain,clientId,secret);
   resourceClient = new ResourceManagementClient(credentials, subscriptionId);
   websiteClient = new WebSiteManagementClient(credentials, subscriptionId);
-  await deleteWebSite();
-  await deleteResourceGroup();
-}
-main().catch((err)=>{
+  deleteWebSite().then((result) => {
+    console.log('Successfully deleted the website: ' + websiteName);
+    console.log('\nDeleting the resource group can take few minutes, so please be patient :).');
+    deleteResourceGroup().then((result) => {
+      console.log('Successfully deleted the resourcegroup: ' + resourceGroupName);
+    },(err)=>{
+      console.log('Error occured in deleting the resource group: ' + resourceGroupName + '\n' + util.inspect(err, { depth: null }));
+    });
+  },(err)=>{
+    console.log('Error occured in deleting the website: ' + websiteName + '\n' + util.inspect(err, { depth: null }));
+  });
+}catch(err){
   console.log(err)
-})
+}
 
