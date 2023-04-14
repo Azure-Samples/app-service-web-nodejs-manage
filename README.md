@@ -25,7 +25,7 @@ This sample demonstrates how to manage your Azure websites using a node.js clien
 <a id="run"></a>
 ## Run this sample
 
-1. If you don't already have it, [get node.js](https://nodejs.org).
+1. If you don't already have it, [get Node.js](https://nodejs.org).
 
 1. Clone the repository.
 
